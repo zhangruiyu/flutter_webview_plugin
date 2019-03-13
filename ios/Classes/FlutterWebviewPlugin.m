@@ -252,7 +252,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
         [channel invokeMethod:@"onUrlChanged" arguments:data];
     }
     for(NSString *key in _interceptUrls)
-    {``
+    {
         if([navigationAction.request.URL.absoluteString containsString:key]){
             id data = @{@"url": navigationAction.request.URL.absoluteString};
             [channel invokeMethod:@"onOverrideUrl" arguments:data];
