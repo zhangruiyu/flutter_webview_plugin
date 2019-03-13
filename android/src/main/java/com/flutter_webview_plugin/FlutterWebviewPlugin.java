@@ -15,6 +15,7 @@ import android.os.Build;
 
 import com.tencent.smtt.sdk.QbSdk;
 
+import java.util.List;
 import java.util.Map;
 
 import io.flutter.plugin.common.MethodCall;
@@ -104,9 +105,10 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
         Map<String, String> headers = call.argument("headers");
         boolean scrollBar = call.argument("scrollBar");
         boolean allowFileURLs = call.argument("allowFileURLs");
+        List<String> interceptUrls = call.argument("interceptUrls");
 
         if (webViewManager == null || webViewManager.closed == true) {
-            webViewManager = new WebviewManager(activity);
+            webViewManager = new WebviewManager(activity,interceptUrls);
         }
 
         FrameLayout.LayoutParams params = buildLayoutParams(call);

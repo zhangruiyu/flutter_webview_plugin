@@ -19,6 +19,7 @@ import com.tencent.smtt.sdk.WebView;
 import com.tencent.smtt.sdk.WebViewClient;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import io.flutter.plugin.common.MethodCall;
@@ -77,11 +78,11 @@ class WebviewManager {
     Activity activity;
     ResultHandler resultHandler;
 
-    WebviewManager(final Activity activity) {
+    WebviewManager(final Activity activity, List<String> interceptUrls) {
         this.webView = new ObservableWebView(activity);
         this.activity = activity;
         this.resultHandler = new ResultHandler();
-        WebViewClient webViewClient = new BrowserClient();
+        WebViewClient webViewClient = new BrowserClient(interceptUrls);
         webView.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {

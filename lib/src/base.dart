@@ -25,6 +25,7 @@ class FlutterWebviewPlugin {
 
   final _onDestroy = StreamController<Null>.broadcast();
   final _onUrlChanged = StreamController<String>.broadcast();
+  final _onOverrideUrl = StreamController<String>.broadcast();
   final _onStateChanged = StreamController<WebViewStateChanged>.broadcast();
   final _onScrollXChanged = StreamController<double>.broadcast();
   final _onScrollYChanged = StreamController<double>.broadcast();
@@ -37,6 +38,9 @@ class FlutterWebviewPlugin {
         break;
       case 'onUrlChanged':
         _onUrlChanged.add(call.arguments['url']);
+        break;
+      case 'onOverrideUrl':
+        _onOverrideUrl.add(call.arguments['url']);
         break;
       case 'onScrollXChanged':
         _onScrollXChanged.add(call.arguments['xDirection']);
@@ -52,7 +56,8 @@ class FlutterWebviewPlugin {
         );
         break;
       case 'onHttpError':
-        _onHttpError.add(WebViewHttpError(call.arguments['code'], call.arguments['url']));
+        _onHttpError.add(
+            WebViewHttpError(call.arguments['code'], call.arguments['url']));
         break;
     }
   }
@@ -62,6 +67,9 @@ class FlutterWebviewPlugin {
 
   /// Listening url changed
   Stream<String> get onUrlChanged => _onUrlChanged.stream;
+
+  /// Listening url overrideUrl
+  Stream<String> get onOverrideUrl => _onOverrideUrl.stream;
 
   /// Listening the onState Event for iOS WebView and Android
   /// content is Map for type: {shouldStart(iOS)|startLoad|finishLoad}
@@ -94,7 +102,8 @@ class FlutterWebviewPlugin {
   /// - [withLocalUrl]: allow url as a local path
   ///     Allow local files on iOs > 9.0
   /// - [scrollBar]: enable or disable scrollbar
-  Future<Null> launch(String url, {
+  Future<Null> launch(
+    String url, {
     Map<String, String> headers,
     bool withJavascript,
     bool clearCache,
@@ -110,6 +119,7 @@ class FlutterWebviewPlugin {
     bool supportMultipleWindows,
     bool appCacheEnabled,
     bool allowFileURLs,
+    List<String> interceptUrls,
   }) async {
     final args = <String, dynamic>{
       'url': url,
@@ -126,6 +136,7 @@ class FlutterWebviewPlugin {
       'supportMultipleWindows': supportMultipleWindows ?? false,
       'appCacheEnabled': appCacheEnabled ?? false,
       'allowFileURLs': allowFileURLs ?? false,
+      'interceptUrls': interceptUrls ?? <String>[],
     };
 
     if (headers != null) {
@@ -175,15 +186,18 @@ class FlutterWebviewPlugin {
   }
 
   // Clean cookies on WebView
-  Future<Null> cleanCookies() async => await _channel.invokeMethod('cleanCookies');
+  Future<Null> cleanCookies() async =>
+      await _channel.invokeMethod('cleanCookies');
 
   // Stops current loading process
-  Future<Null> stopLoading() async => await _channel.invokeMethod('stopLoading');
+  Future<Null> stopLoading() async =>
+      await _channel.invokeMethod('stopLoading');
 
   /// Close all Streams
   void dispose() {
     _onDestroy.close();
     _onUrlChanged.close();
+    _onOverrideUrl.close();
     _onStateChanged.close();
     _onScrollXChanged.close();
     _onScrollYChanged.close();

@@ -7,6 +7,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     BOOL _enableAppScheme;
     BOOL _enableZoom;
 }
+@property (nonatomic, strong) NSMutableDictionary *interceptUrls;
 @end
 
 @implementation FlutterWebviewPlugin
@@ -25,6 +26,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     self = [super init];
     if (self) {
         self.viewController = viewController;
+         _interceptUrls = [[NSMutableDictionary alloc]init];
     }
     return self;
 }
@@ -83,7 +85,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     NSString *userAgent = call.arguments[@"userAgent"];
     NSNumber *withZoom = call.arguments[@"withZoom"];
     NSNumber *scrollBar = call.arguments[@"scrollBar"];
-
+    _interceptUrls = call.arguments[@"interceptUrls"];
     if (clearCache != (id)[NSNull null] && [clearCache boolValue]) {
         [[NSURLCache sharedURLCache] removeAllCachedResponses];
     }
@@ -249,7 +251,18 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
         id data = @{@"url": navigationAction.request.URL.absoluteString};
         [channel invokeMethod:@"onUrlChanged" arguments:data];
     }
+    for(NSString *key in _interceptUrls)
+    {``
+        if([navigationAction.request.URL.absoluteString containsString:key]){
+            id data = @{@"url": navigationAction.request.URL.absoluteString};
+            [channel invokeMethod:@"onOverrideUrl" arguments:data];
+            decisionHandler(WKNavigationActionPolicyCancel);
+            return;
+        }
 
+    }
+
+  
     if (_enableAppScheme ||
         ([webView.URL.scheme isEqualToString:@"http"] ||
          [webView.URL.scheme isEqualToString:@"https"] ||

@@ -7,7 +7,6 @@ import 'package:flutter/rendering.dart';
 import 'base.dart';
 
 class WebviewScaffold extends StatefulWidget {
-
   const WebviewScaffold({
     Key key,
     this.appBar,
@@ -30,6 +29,7 @@ class WebviewScaffold extends StatefulWidget {
     this.hidden = false,
     this.initialChild,
     this.allowFileURLs,
+    this.interceptUrls,
   }) : super(key: key);
 
   final PreferredSizeWidget appBar;
@@ -52,7 +52,7 @@ class WebviewScaffold extends StatefulWidget {
   final bool hidden;
   final Widget initialChild;
   final bool allowFileURLs;
-
+  final List<String> interceptUrls;
   @override
   _WebviewScaffoldState createState() => _WebviewScaffoldState();
 }
@@ -69,7 +69,8 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
     webviewReference.close();
 
     if (widget.hidden) {
-      _onStateChanged = webviewReference.onStateChanged.listen((WebViewStateChanged state) {
+      _onStateChanged =
+          webviewReference.onStateChanged.listen((WebViewStateChanged state) {
         if (state.type == WebViewState.finishLoad) {
           webviewReference.show();
         }
@@ -98,24 +99,23 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
         onRectChanged: (Rect value) {
           if (_rect == null) {
             _rect = value;
-            webviewReference.launch(
-              widget.url,
-              headers: widget.headers,
-              withJavascript: widget.withJavascript,
-              clearCache: widget.clearCache,
-              clearCookies: widget.clearCookies,
-              hidden: widget.hidden,
-              enableAppScheme: widget.enableAppScheme,
-              userAgent: widget.userAgent,
-              rect: _rect,
-              withZoom: widget.withZoom,
-              withLocalStorage: widget.withLocalStorage,
-              withLocalUrl: widget.withLocalUrl,
-              scrollBar: widget.scrollBar,
-              supportMultipleWindows: widget.supportMultipleWindows,
-              appCacheEnabled: widget.appCacheEnabled,
-              allowFileURLs: widget.allowFileURLs,
-            );
+            webviewReference.launch(widget.url,
+                headers: widget.headers,
+                withJavascript: widget.withJavascript,
+                clearCache: widget.clearCache,
+                clearCookies: widget.clearCookies,
+                hidden: widget.hidden,
+                enableAppScheme: widget.enableAppScheme,
+                userAgent: widget.userAgent,
+                rect: _rect,
+                withZoom: widget.withZoom,
+                withLocalStorage: widget.withLocalStorage,
+                withLocalUrl: widget.withLocalUrl,
+                scrollBar: widget.scrollBar,
+                supportMultipleWindows: widget.supportMultipleWindows,
+                appCacheEnabled: widget.appCacheEnabled,
+                allowFileURLs: widget.allowFileURLs,
+                interceptUrls: widget.interceptUrls);
           } else {
             if (_rect != value) {
               _rect = value;
@@ -127,7 +127,8 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
             }
           }
         },
-        child: widget.initialChild ?? const Center(child: const CircularProgressIndicator()),
+        child: widget.initialChild ??
+            const Center(child: const CircularProgressIndicator()),
       ),
     );
   }
@@ -150,7 +151,8 @@ class _WebviewPlaceholder extends SingleChildRenderObjectWidget {
   }
 
   @override
-  void updateRenderObject(BuildContext context, _WebviewPlaceholderRender renderObject) {
+  void updateRenderObject(
+      BuildContext context, _WebviewPlaceholderRender renderObject) {
     renderObject..onRectChanged = onRectChanged;
   }
 }

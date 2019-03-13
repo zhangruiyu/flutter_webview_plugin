@@ -8,6 +8,7 @@ import com.tencent.smtt.sdk.WebView;
 import com.tencent.smtt.sdk.WebViewClient;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -15,8 +16,12 @@ import java.util.Map;
  */
 
 public class BrowserClient extends WebViewClient {
-    public BrowserClient() {
+
+    private final List<String> mInterceptUrls;
+
+    public BrowserClient(List<String> interceptUrls) {
         super();
+        mInterceptUrls = interceptUrls;
     }
 
     @Override
@@ -27,6 +32,22 @@ public class BrowserClient extends WebViewClient {
         data.put("type", "startLoad");
         FlutterWebviewPlugin.channel.invokeMethod("onState", data);
     }
+
+
+    @Override
+    public boolean shouldOverrideUrlLoading(WebView view, String url) {
+
+        for (String interceptUrl : mInterceptUrls) {
+            if (url.contains(interceptUrl)) {
+                Map<String, Object> data = new HashMap<>();
+                data.put("url", url);
+                FlutterWebviewPlugin.channel.invokeMethod("onOverrideUrl", data);
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     @Override
     public void onPageFinished(WebView view, String url) {
