@@ -4,12 +4,16 @@ package com.flutter_webview_plugin;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.view.Display;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.webkit.CookieManager;
 import android.webkit.ValueCallback;
 import android.os.Build;
+
+import com.tencent.smtt.sdk.QbSdk;
 
 import java.util.Map;
 
@@ -28,6 +32,9 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
     private static final String CHANNEL_NAME = "flutter_webview_plugin";
 
     public static void registerWith(PluginRegistry.Registrar registrar) {
+        QbSdk.initX5Environment(registrar.context(),null);
+        registrar.activity().getWindow().setFormat(PixelFormat.TRANSLUCENT);
+        registrar.activity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE | WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         channel = new MethodChannel(registrar.messenger(), CHANNEL_NAME);
         final FlutterWebviewPlugin instance = new FlutterWebviewPlugin(registrar.activity());
         registrar.addActivityResultListener(instance);
