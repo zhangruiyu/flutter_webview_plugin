@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 
 import com.tencent.smtt.export.external.interfaces.WebResourceRequest;
 import com.tencent.smtt.export.external.interfaces.WebResourceResponse;
+import com.tencent.smtt.export.external.interfaces.SslError;
+import com.tencent.smtt.export.external.interfaces.SslErrorHandler;
 import com.tencent.smtt.sdk.WebView;
 import com.tencent.smtt.sdk.WebViewClient;
 
@@ -47,7 +49,11 @@ public class BrowserClient extends WebViewClient {
         }
         return false;
     }
-
+    
+    @Override
+    public void onReceivedSslError(WebView view,SslErrorHandler handler, SslError error) {
+        handler.proceed(); // 接受所有证书
+    }
 
     @Override
     public void onPageFinished(WebView view, String url) {
