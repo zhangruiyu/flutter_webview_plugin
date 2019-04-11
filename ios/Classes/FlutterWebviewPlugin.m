@@ -62,9 +62,15 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
         result(nil);
     } else if ([@"cleanCookies" isEqualToString:call.method]) {
         [self cleanCookies];
-    } else if ([@"back" isEqualToString:call.method]) {
-        [self back];
-        result(nil);
+    }else if ([@"back" isEqualToString:call.method]) {
+        if([self.webview canGoBack]){
+         [self back];
+         result([NSNumber numberWithBool:NO]);
+        }else{
+          [self closeWebView];
+          result([NSNumber numberWithBool:YES]);
+        }
+
     } else if ([@"forward" isEqualToString:call.method]) {
         [self forward];
         result(nil);

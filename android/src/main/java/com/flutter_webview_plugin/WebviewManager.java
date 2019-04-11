@@ -430,6 +430,10 @@ class WebviewManager {
     void back (MethodCall call, MethodChannel.Result result){
         if (webView != null && webView.canGoBack()) {
             webView.goBack();
+            result.success(false);
+        }else{
+            close();
+            result.success(true);
         }
     }
     /**
