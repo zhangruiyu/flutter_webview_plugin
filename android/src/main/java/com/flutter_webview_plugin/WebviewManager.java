@@ -1,6 +1,9 @@
 package com.flutter_webview_plugin;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -279,7 +282,7 @@ class WebviewManager {
                         //适配7.0
                         if (Build.VERSION.SDK_INT > M) {
                             if (photoFile != null) {
-                                photoURI = FileProvider.getUriForFile(activity, "com.ymwy.zhou.ymlh.fileprovider", photoFile);
+                                photoURI = FileProvider.getUriForFile(activity, getPackageName(activity)+".fileprovider", photoFile);
                                 takePictureIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                             }
@@ -302,6 +305,17 @@ class WebviewManager {
                 return true;
             }
         });
+    }
+    public  synchronized String getPackageName(Context context) {
+        try {
+            PackageManager packageManager = context.getPackageManager();
+            PackageInfo packageInfo = packageManager.getPackageInfo(
+                    context.getPackageName(), 0);
+            return packageInfo.packageName;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private void clearCookies() {
