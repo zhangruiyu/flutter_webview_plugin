@@ -279,7 +279,7 @@ class WebviewManager {
                         //适配7.0
                         if (Build.VERSION.SDK_INT > M) {
                             if (photoFile != null) {
-                                photoURI = FileProvider.getUriForFile(activity, "ymkj.hugeRich.com.fileprovider", photoFile);
+                                photoURI = FileProvider.getUriForFile(activity, "com.ymwy.zhou.ymlh.fileprovider", photoFile);
                                 takePictureIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                             }
